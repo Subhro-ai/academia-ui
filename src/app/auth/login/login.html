@@ -1,0 +1,24 @@
+
+<div class="flex justify-center items-center h-screen bg-gradient-to-b from-surface-0 to-surface-100 dark:from-surface-800 dark:to-surface-900">
+  <div class="flex flex-col items-center gap-6">
+    <h1 class="text-4xl font-bold text-surface-900 dark:text-surface-0">
+      Academia Portal
+    </h1>
+
+    <p-card header="Login to your Account" [style]="{width: '380px'}">
+      <div class="flex flex-col gap-6 mt-6">
+        <p-floatLabel>
+          <input pInputText id="username" class="w-full" />
+          <label for="username">Net ID</label>
+        </p-floatLabel>
+
+        <p-floatLabel>
+          <input pInputText id="password" type="password" class="w-full" />
+          <label for="password">Password</label>
+        </p-floatLabel>
+
+        <p-button label="Login" icon="pi pi-sign-in" styleClass="w-full"></p-button>
+      </div>
+    </p-card>
+  </div>
+</div>
