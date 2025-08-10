@@ -9,6 +9,7 @@ import { providePrimeNG } from 'primeng/config';
 import { definePreset } from '@primeuix/themes';
 
 import Aura from '@primeuix/themes/aura';
+import { MessageService } from 'primeng/api';
 
 // 1. Define a new preset based on Aura
 const CustomAura = definePreset(Aura, {
@@ -35,12 +36,14 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideAnimationsAsync(),
     provideHttpClient(),
+
     
     // 3. Use your new custom preset
     providePrimeNG({
       theme: {
         preset: CustomAura
       }
-    })
+    }),
+    MessageService
   ]
 };

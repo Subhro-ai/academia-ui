@@ -1,0 +1,13 @@
+:host ::ng-deep .p-menu-list {
+  flex-grow: 1;
+}
+
+:host ::ng-deep .logout-item .p-menuitem-link {
+  /* Use a red color from the theme's palette */
+  color: var(--p-red-500);
+}
+
+/* Change the background on hover for better user feedback */
+:host ::ng-deep .logout-item .p-menuitem-link:hover {
+  background-color: var(--p-red-50);
+}

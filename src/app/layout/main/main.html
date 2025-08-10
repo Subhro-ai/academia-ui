@@ -1,0 +1,73 @@
+<!-- Main Layout Container -->
+<div class="flex h-screen w-screen overflow-hidden bg-surface-50 dark:bg-surface-900">
+
+  @if (isDesktop && sidebarVisible) {
+    <p-menu 
+      [model]="items" 
+      styleClass="w-[250px] flex flex-col h-full border-r border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-800">
+      <ng-template pTemplate="start">
+        <span class="inline-flex items-center gap-2 px-4 py-4">
+          <span class="text-xl font-semibold">
+            Academia<span class="text-primary">Portal</span>
+          </span>
+        </span>
+      </ng-template>
+      
+      <ng-template pTemplate="item" let-item>
+        <a [routerLink]="item.routerLink" pRipple class="flex items-center p-menu-item-link">
+          <span [class]="item.icon"></span>
+          <span class="ml-2">{{ item.label }}</span>
+        </a>
+      </ng-template>
+      
+
+      <ng-template pTemplate="end">
+        <div class="mt-auto">
+          @for (item of footerItems; track item) {
+            @if (item.separator) {
+              <div class="p-menu-separator mx-1"></div>
+            } @else {
+              <a [routerLink]="item.routerLink" pRipple class="flex items-center p-menu-item-link m-2">
+                <span [class]="item.icon"></span>
+                <span class="ml-2">{{ item.label }}</span>
+              </a>
+            }
+          }
+        </div>
+      </ng-template>
+    </p-menu>
+  }
+
+  <!-- ... rest of your mobile drawer and main content ... -->
+  
+
+
+  <!-- Use the new @if block for the mobile drawer -->
+  @if (!isDesktop) {
+    <p-drawer [(visible)]="sidebarVisible" [style]="{'width': '250px'}">
+      <ng-template pTemplate="header">
+        <h2 class="text-2xl font-semibold">Academia Portal</h2>
+      </ng-template>
+      <ul class="flex flex-col gap-2 p-0 m-0">
+        <li class="p-2 hover:bg-surface-100 dark:hover:bg-surface-700 rounded-md cursor-pointer">Dashboard</li>
+        <li class="p-2 hover:bg-surface-100 dark:hover:bg-surface-700 rounded-md cursor-pointer">Attendance</li>
+        <li class="p-2 hover:bg-surface-100 dark:hover:bg-surface-700 rounded-md cursor-pointer">Marks</li>
+      </ul>
+    </p-drawer>
+  }
+
+  <!-- Main Content Area -->
+  <div class="flex-1 flex flex-col overflow-y-auto">
+    <!-- Header with Menu Button -->
+    <header class="flex items-center p-4 border-b border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-800">
+      <p-button type="button" icon="pi pi-bars" (click)="toggleSidebar()" styleClass="p-button-text">
+      </p-button>
+      <h1 class="text-2xl font-semibold ml-4">Dashboard</h1>
+    </header>
+
+    <!-- Page Content -->
+    <main class="p-6">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

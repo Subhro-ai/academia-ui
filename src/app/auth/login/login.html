@@ -1,23 +1,23 @@
-
-<div class="flex justify-center items-center h-screen bg-gradient-to-b from-surface-0 to-surface-100 dark:from-surface-800 dark:to-surface-900">
+<div class="flex justify-center items-center h-screen bg-surface-100 dark:bg-surface-900 p-4 sm:p-0">
   <div class="flex flex-col items-center gap-6">
-    <h1 class="text-4xl font-bold text-surface-900 dark:text-surface-0">
+    <h1 class="text-3xl sm:text-4xl font-bold text-surface-900 dark:text-surface-0 text-center">
       Academia Portal
     </h1>
 
-    <p-card header="Login to your Account" [style]="{width: '380px'}">
-      <div class="flex flex-col gap-6 mt-6">
-        <p-floatLabel>
-          <input pInputText id="username" class="w-full" />
-          <label for="username">Net ID</label>
+    <p-card header="Login to your Account" styleClass="w-full max-w-md sm:w-96">
+      <div class="flex flex-col gap-6">
+        <p-floatLabel variant="on" class="mt-4">
+          <input pInputText id="username" class="w-full" [(ngModel)]="username" />
+          <label for="username">Registration Number</label>
         </p-floatLabel>
 
-        <p-floatLabel>
-          <input pInputText id="password" type="password" class="w-full" />
+        <p-floatLabel variant="on">
+          <input pInputText id="password" type="password" class="w-full" [(ngModel)]="password" />
           <label for="password">Password</label>
         </p-floatLabel>
 
-        <p-button label="Login" icon="pi pi-sign-in" styleClass="w-full"></p-button>
+        <!-- The (click)="login()" was re-added here -->
+        <p-button label="Login" icon="pi pi-sign-in" styleClass="w-full" (click)="login()"></p-button>
       </div>
     </p-card>
   </div>

@@ -1,2 +1,20 @@
 /* You can add global styles to this file, and also import other style files */
 @import "tailwindcss";
+@import "primeicons/primeicons.css";
+@media (max-width: 576px) {
+  /* Target the main toast container */
+  .p-toast {
+    /* Set width to 90% of the viewport width */
+    width: 90vw !important;
+    /* Center the toast by moving its left edge to the center... */
+    left: 50% !important;
+    /* ...and then shifting it back by half of its own width. */
+    transform: translateX(-50%) !important;
+    margin: 0 !important;
+  }
+
+  /* Target the message element inside the toast */
+  .p-toast-message {
+    width: 100% !important;
+  }
+}
