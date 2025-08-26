@@ -2,12 +2,76 @@
   flex-grow: 1;
 }
 
-:host ::ng-deep .logout-item .p-menuitem-link {
+:host ::ng-deep a.logout-item {
   /* Use a red color from the theme's palette */
-  color: var(--p-red-500);
+  color: var(--p-red-500) !important;
 }
 
-/* Change the background on hover for better user feedback */
-:host ::ng-deep .logout-item .p-menuitem-link:hover {
-  background-color: var(--p-red-50);
+/* Custom Footer Navigation Styles */
+.nav-item {
+  position: relative;
+  text-decoration: none;
+  color: var(--p-text-color);
+  cursor: pointer;
+}
+
+.nav-item:hover {
+  color: var(--p-primary-color);
+}
+
+/* Active navigation item styling */
+.nav-item.nav-active {
+  color: var(--p-primary-color);
+  background-color: var(--p-primary-color-alpha-10);
+}
+
+.nav-item.nav-active::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 2px;
+  background-color: var(--p-primary-color);
+  opacity: 0.6;
+  border-radius: 0 0 2px 2px;
+}
+
+/* Icon styling */
+.nav-item span[class*="pi-"] {
+  transition: transform 0.2s ease;
+}
+
+.nav-item:hover span[class*="pi-"],
+.nav-item.nav-active span[class*="pi-"] {
+  transform: scale(1.1);
+}
+
+/* Text styling for better readability */
+.nav-item .text-xs {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+/* Ripple effect enhancement */
+:host ::ng-deep .nav-item .p-ink {
+  border-radius: 8px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .nav-item {
+    padding: 6px 1px !important;
+  }
+  
+  .nav-item .text-xs {
+    font-size: 9px !important;
+  }
+  
+  .nav-item span[class*="pi-"] {
+    font-size: 16px !important;
+  }
 }
