@@ -20,6 +20,7 @@ export class Dashboard {
 
   timetable: DaySchedule[] = [];
   currentDayIndex = 0;
+  totalAttendance = 0;
 
   ngOnInit() {
     this.dataService.getTimetable().subscribe({
@@ -30,6 +31,14 @@ export class Dashboard {
       error: (err) => {
         console.error('Failed to fetch timetable', err);
         // Handle error, maybe show a toast message
+      }
+    });
+    this.dataService.getTotalAttendance().subscribe({
+      next: (data) => {
+        this.totalAttendance = data.totalAttendancePercentage;
+      },
+      error: (err) => {
+        console.error('Failed to fetch total attendance', err);
       }
     });
 

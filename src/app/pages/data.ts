@@ -7,6 +7,11 @@ export interface DaySchedule {
   classes: any[];
 }
 
+export interface TotalAttendance {
+  totalAttendancePercentage: number;
+}
+
+
 @Injectable({
   providedIn: 'root'
 })
@@ -26,5 +31,11 @@ export class DataService {
 
     // Make the request with the custom headers and remove withCredentials
     return this.http.get<DaySchedule[]>(`${this.apiUrl}/timetable`, { headers });
+  }
+
+  getTotalAttendance(): Observable<TotalAttendance> {
+    return this.http.get<TotalAttendance>(`${this.apiUrl}/total-attendance`, {
+        withCredentials: true
+    });
   }
 }
