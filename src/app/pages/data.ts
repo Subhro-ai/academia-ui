@@ -2,7 +2,6 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-
 export interface DaySchedule {
   dayOrder: string;
   classes: any[];
@@ -16,11 +15,16 @@ export class DataService {
   private apiUrl = 'http://localhost:8080/api/data';
 
   getTimetable(): Observable<DaySchedule[]> {
-    // You no longer need to get the cookie from localStorage or create headers manually.
-    // HttpClient will handle it automatically with the new option.
+    const sessionCookie = localStorage.getItem('sessionCookie');
 
-    return this.http.get<DaySchedule[]>(`${this.apiUrl}/timetable`, { 
-        withCredentials: true // <-- ADD THIS LINE
-    });
-}
+    if (!sessionCookie) {
+      throw new Error('Session token not found in localStorage.');
+    }
+
+    // Create headers and add the token to a custom header
+    const headers = new HttpHeaders().set('X-Academia-Auth', sessionCookie);
+
+    // Make the request with the custom headers and remove withCredentials
+    return this.http.get<DaySchedule[]>(`${this.apiUrl}/timetable`, { headers });
+  }
 }
