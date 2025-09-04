@@ -44,4 +44,6 @@ export class DataService {
     return this.http.get<TotalAttendance>(`${this.apiUrl}/total-attendance`, { headers });
 
   }
+
+  getAttendance(): 
 }
