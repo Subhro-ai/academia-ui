@@ -14,7 +14,8 @@ export const routes: Routes = [
     loadComponent: () => import('./layout/main/main').then(m => m.Main),
     children: [
       { path: 'dashboard', loadComponent: () => import('./pages/dashboard/dashboard').then(m => m.Dashboard) },
-      // Other pages will go here
+      { path: 'attendance', loadComponent: () => import('./pages/attendance/attendance').then(m => m.Attendance) },
+
     ]
   }
 ];
