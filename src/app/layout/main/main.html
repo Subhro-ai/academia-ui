@@ -21,16 +21,18 @@
       
       <ng-template pTemplate="end">
         <div class="mt-auto">
-          @for (item of footerItems; track item) {
-            @if (item.separator) {
-              <div class="p-menu-separator mx-1"></div>
-            } @else {
-              <a [routerLink]="item.command ? null : item.routerLink" (click)="item.command && item.command()" pRipple class="flex items-center p-menu-item-link m-2" [class]="item.styleClass" style="cursor: pointer;">
-                <span [class]="item.icon"></span>
-                <span class="ml-2">{{ item.label }}</span>
-              </a>
-            }
-          }
+          <!-- Profile Link -->
+          <div class="p-menu-separator mx-1"></div>
+          <a routerLink="/profile" pRipple class="flex items-center p-menu-item-link m-2" style="cursor: pointer;">
+            <span class="pi pi-user"></span>
+            <span class="ml-2">Profile</span>
+          </a>
+          
+          <!-- Custom Logout Button -->
+          <button (click)="logout()" pRipple class="flex items-center p-menu-item-link m-2 w-full text-left logout-item border-0 bg-transparent" style="cursor: pointer;">
+            <span class="pi pi-sign-out"></span>
+            <span class="ml-2">Logout</span>
+          </button>
         </div>
       </ng-template>
     </p-menu>
@@ -42,9 +44,9 @@
       <nav class="flex items-center justify-around px-2 py-2">
         @for (item of navItems; track item.label) {
           <a 
-            [routerLink]="item.command ? null : item.route" 
-            (click)="item.command && item.command()"
+            [routerLink]="item.route" 
             routerLinkActive="nav-active"
+            [routerLinkActiveOptions]="{exact: false}"
             class="nav-item flex flex-col items-center justify-center px-2 py-2 rounded-lg transition-all duration-200 hover:bg-surface-100 dark:hover:bg-surface-700 min-w-0 flex-1"
             pRipple>
             <span [class]="item.icon" class="text-lg mb-1 transition-colors duration-200"></span>
@@ -56,13 +58,8 @@
   }
 
   <div class="flex-1 flex flex-col overflow-y-auto">
-    <!-- <header class="flex items-center p-4 border-b border-surface-100 dark:border-surface-100 bg-surface-0 dark:bg-surface-100">
-      <h1 class="text-2xl font-semibold ml-4">Dashboard</h1>
-    </header> -->
-
     <main class="p-6 pb-24 md:pb-6">
       <router-outlet></router-outlet>
     </main>
   </div>
 </div>
-
