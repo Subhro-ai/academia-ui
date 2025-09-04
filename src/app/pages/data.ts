@@ -11,6 +11,17 @@ export interface TotalAttendance {
   totalAttendancePercentage: number;
 }
 
+export interface AttendanceDetail {
+  courseCode: string;
+  courseTitle: string;
+  courseCategory: string;
+  courseFaculty: string;
+  courseSlot: string;
+  courseAttendance: string;
+  courseConducted: number;
+  courseAbsent: number;
+}
+
 
 @Injectable({
   providedIn: 'root'
@@ -45,5 +56,14 @@ export class DataService {
 
   }
 
-  getAttendance(): 
+  getAttendance(): Observable<AttendanceDetail[]> {
+    const sessionCookie = localStorage.getItem('sessionCookie');
+
+    if (!sessionCookie) {
+      throw new Error('Session token not found in localStorage.');
+    }
+
+    const headers = new HttpHeaders().set('X-Academia-Auth', sessionCookie);
+    return this.http.get<AttendanceDetail[]>(`${this.apiUrl}/attendance`, { headers });
+  } 
 }

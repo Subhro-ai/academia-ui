@@ -47,12 +47,14 @@
     <tr>
       <th>Time</th>
       <th>Course Title</th>
+      <th>Attendance</th>
     </tr>
   </ng-template>
   <ng-template pTemplate="body" let-class>
     <tr [ngClass]="{'bg-primary-50 dark:bg-primary-900/50': class.isClass}">
       <td>{{ class.time }}</td>
       <td>{{ class.isClass ? class.courseTitle : '---' }}</td>
+      <td [ngClass]="getAttendanceClass(class.courseCode)">{{ class.isClass ? getAttendanceForCourse(class.courseCode) : '---' }}</td>
     </tr>
   </ng-template>
 </p-table>

@@ -1,10 +1,10 @@
 import { Component, inject } from '@angular/core';
 import { CardModule } from 'primeng/card';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgClass } from '@angular/common';
 import { Divider } from 'primeng/divider';
 import { ButtonModule } from 'primeng/button';
 import { TableModule } from 'primeng/table'; // Import TableModule
-import { DataService, DaySchedule } from '../data';
+import { AttendanceDetail, DataService, DaySchedule } from '../data';
 @Component({
   selector: 'app-dashboard',
   imports: [CardModule, 
@@ -21,6 +21,7 @@ export class Dashboard {
   timetable: DaySchedule[] = [];
   currentDayIndex = 0;
   totalAttendance = 0;
+  attendaceList: AttendanceDetail[] = [];
 
   ngOnInit() {
     this.dataService.getTimetable().subscribe({
@@ -42,7 +43,34 @@ export class Dashboard {
       }
     });
 
+    this.dataService.getAttendance().subscribe({
+      next: (data) => {
+        this.attendaceList = data;
+        console.log('Attendance data received:', this.attendaceList);
+      },
+      error: (err) => {
+        console.error('Failed to fetch attendance', err);
+      }
+    });
+
   }
+
+  getAttendanceForCourse(courseCode: string): string {
+    const course = this.attendaceList.find(a => a.courseCode === courseCode);
+    return course ? `${course.courseAttendance}` : 'N/A';
+  }
+
+  getAttendanceClass(courseCode: string): string {
+    const course = this.attendaceList.find(a => a.courseCode === courseCode);
+    if (course && course.courseAttendance) {
+      const attendancePercentage = parseFloat(course.courseAttendance);
+      if (!isNaN(attendancePercentage)) {
+        return attendancePercentage >= 75 ? 'text-green-500' : 'text-red-500';
+      }
+    }
+    return '';
+  }
+
   nextDay() {
     if (this.currentDayIndex < this.timetable.length - 1) {
       this.currentDayIndex++;
