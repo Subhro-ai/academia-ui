@@ -4,7 +4,7 @@ import { CommonModule, NgClass } from '@angular/common';
 import { Divider } from 'primeng/divider';
 import { ButtonModule } from 'primeng/button';
 import { TableModule } from 'primeng/table'; // Import TableModule
-import { AttendanceDetail, DataService, DaySchedule } from '../data';
+import { AttendanceDetail, DataService, DaySchedule, MarksDetail } from '../data';
 @Component({
   selector: 'app-dashboard',
   imports: [CardModule, 
@@ -22,6 +22,10 @@ export class Dashboard {
   currentDayIndex = 0;
   totalAttendance = 0;
   attendaceList: AttendanceDetail[] = [];
+  marksList: MarksDetail[] = [];
+  totalMarks = 0;
+  obtainedMarks = 0;
+  totalmarkList: number[] = [];
 
   ngOnInit() {
     this.dataService.getTimetable().subscribe({
@@ -53,11 +57,27 @@ export class Dashboard {
       }
     });
 
+    this.dataService.getMarks().subscribe({
+      next: (data) => {
+        console.log('Marks data received:', data);
+        this.marksList = data;
+        this.totalmarkList = this.dataService.getTotalMarks(this.marksList);
+        // console.log(this.totalmarkList);
+        this.obtainedMarks = this.totalmarkList[0];
+        this.totalMarks = this.totalmarkList[1];
+      },
+      error: (err) => {
+        console.error('Failed to fetch marks', err);
+      }
+    });
   }
+
+
 
   getAttendanceForCourse(courseCode: string): string {
     const course = this.attendaceList.find(a => a.courseCode === courseCode);
     return course ? `${course.courseAttendance}` : 'N/A';
+    console.log(this.totalmarkList);
   }
 
   getAttendanceClass(courseCode: string): string {
@@ -82,4 +102,6 @@ export class Dashboard {
       this.currentDayIndex--;
     }
   }
+
+  
 }

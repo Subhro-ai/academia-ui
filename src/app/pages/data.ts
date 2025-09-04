@@ -22,6 +22,17 @@ export interface AttendanceDetail {
   courseAbsent: number;
 }
 
+export interface mark {
+  exam: string;
+  obtained: number;
+  maxMark: number;
+}
+
+export interface MarksDetail {
+  course: string;
+  category: string;
+  marks: mark[];
+}
 
 @Injectable({
   providedIn: 'root'
@@ -66,4 +77,27 @@ export class DataService {
     const headers = new HttpHeaders().set('X-Academia-Auth', sessionCookie);
     return this.http.get<AttendanceDetail[]>(`${this.apiUrl}/attendance`, { headers });
   } 
+  getMarks(): Observable<MarksDetail[]> {
+    const sessionCookie = localStorage.getItem('sessionCookie');
+
+    if (!sessionCookie) {
+      throw new Error('Session token not found in localStorage.');
+    }
+
+    const headers = new HttpHeaders().set('X-Academia-Auth', sessionCookie);
+    return this.http.get<MarksDetail[]>(`${this.apiUrl}/marks`, { headers });
+  }
+
+  getTotalMarks(MarksDetail : MarksDetail[]): number[] {
+    let totalObtained = 0;
+    let max = 0;
+    
+    for (let detail of MarksDetail) {
+      for (let mark of detail.marks) {
+        totalObtained += mark.obtained;
+        max += mark.maxMark;
+      }
+    }
+    return [totalObtained, max];
+  }
 }
