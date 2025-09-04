@@ -34,8 +34,14 @@ export class DataService {
   }
 
   getTotalAttendance(): Observable<TotalAttendance> {
-    return this.http.get<TotalAttendance>(`${this.apiUrl}/total-attendance`, {
-        withCredentials: true
-    });
+    const sessionCookie = localStorage.getItem('sessionCookie');
+
+    if (!sessionCookie) {
+        throw new Error('Session token not found in localStorage.');
+    }
+
+    const headers = new HttpHeaders().set('X-Academia-Auth', sessionCookie);
+    return this.http.get<TotalAttendance>(`${this.apiUrl}/total-attendance`, { headers });
+
   }
 }
