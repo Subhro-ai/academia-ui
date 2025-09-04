@@ -1,19 +1,21 @@
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit, inject } from '@angular/core';
 import { RouterOutlet, RouterModule } from '@angular/router'; 
 import { DrawerModule } from 'primeng/drawer';
 import { ButtonModule } from 'primeng/button';
 import { CommonModule } from '@angular/common';
 import { MenuModule } from 'primeng/menu';
-import { MenuItem } from 'primeng/api';
+import { MenuItem, MessageService } from 'primeng/api';
 import { RippleModule } from 'primeng/ripple';
 import { DividerModule } from 'primeng/divider';
 import { Router } from '@angular/router'; 
 import { DockModule } from 'primeng/dock';
+import { AuthService } from '../../auth/auth';
 
 interface NavItem {
   label: string;
   icon: string;
-  route: string;
+  route?: string;
+  command?: () => void; // Changed to expect no arguments
 }
 
 @Component({
@@ -25,7 +27,10 @@ interface NavItem {
 })
 export class Main implements OnInit {
 
-  constructor(private router: Router) {}
+  private router = inject(Router);
+  private authService = inject(AuthService);
+  private messageService = inject(MessageService);
+
   isDesktop = true;
   sidebarVisible = true;
   desktopMenuItems: MenuItem[] | undefined; 
@@ -42,18 +47,23 @@ export class Main implements OnInit {
     this.checkScreenSize();
     
     const pages = [
-        { label: 'Dashboard', icon: 'pi pi-home', routerLink: '/dashboard', styleClass: 'dock-item' },
-        { label: 'Attendance', icon: 'pi pi-bolt', routerLink: '/attendance', styleClass: 'dock-item' },
-        { label: 'Timetable', icon: 'pi pi-calendar', routerLink: '/timetable', styleClass: 'dock-item' },
-        { label: 'Internals', icon: 'pi pi-chart-line', routerLink: '/internals', styleClass: 'dock-item' }
+        { label: 'Dashboard', icon: 'pi pi-home', routerLink: '/dashboard' },
+        { label: 'Attendance', icon: 'pi pi-bolt', routerLink: '/attendance' },
+        { label: 'Timetable', icon: 'pi pi-calendar', routerLink: '/timetable' },
+        { label: 'Internals', icon: 'pi pi-chart-line', routerLink: '/marks' }
     ];
 
     this.desktopMenuItems = [{ label: 'Pages', items: pages }];
 
     this.footerItems = [
         { separator: true },
-        { label: 'Profile', icon: 'pi pi-user', routerLink: '/profile', styleClass: 'dock-item' },
-        { label: 'Logout', icon: 'pi pi-sign-out', styleClass: 'logout-item' }
+        { label: 'Profile', icon: 'pi pi-user', routerLink: '/profile' },
+        { 
+          label: 'Logout', 
+          icon: 'pi pi-sign-out', 
+          styleClass: 'logout-item',
+          command: () => this.logout() // Changed to expect no arguments
+        }
     ];
 
     // Navigation items for custom footer navbar
@@ -73,8 +83,29 @@ export class Main implements OnInit {
     this.sidebarVisible = this.isDesktop;
   }
 
-  // This function will be called by our menu button
   toggleSidebar() {
     this.sidebarVisible = !this.sidebarVisible;
   }
+
+  logout() {
+    this.authService.logout().subscribe({
+      next: () => {
+        this.performFrontendLogout();
+      },
+      error: (err) => {
+        console.error('Logout failed on backend:', err);
+        this.performFrontendLogout('Logout failed on the server, but you have been logged out locally.');
+      }
+    });
+  }
+
+  private performFrontendLogout(message = 'Logged out successfully!') {
+    localStorage.removeItem('sessionCookie');
+    this.messageService.add({ severity: 'success', summary: 'Success', detail: message, life: 3000 });
+    
+    setTimeout(() => {
+        this.router.navigate(['/login']);
+    }, 1500);
+  }
 }
+
