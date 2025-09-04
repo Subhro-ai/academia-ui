@@ -8,7 +8,7 @@
       <div class="flex flex-col gap-6">
         <p-floatLabel variant="on" class="mt-4">
           <input pInputText id="username" class="w-full" [(ngModel)]="username" />
-          <label for="username">Registration Number</label>
+          <label for="username">NetID</label>
         </p-floatLabel>
 
         <p-floatLabel variant="on">
@@ -17,7 +17,13 @@
         </p-floatLabel>
 
         <!-- The (click)="login()" was re-added here -->
-        <p-button label="Login" icon="pi pi-sign-in" styleClass="w-full" (click)="login()"></p-button>
+        <p-button 
+          [label]="isLoading ? 'Authenticating...' : 'Login'" 
+          icon="pi pi-sign-in" 
+          styleClass="w-full" 
+          (click)="login()"
+          [loading]="isLoading">
+        </p-button>
       </div>
     </p-card>
   </div>

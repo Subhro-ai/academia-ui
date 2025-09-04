@@ -27,6 +27,7 @@ import { MessageService } from 'primeng/api';
 export class LoginComponent {
   username = '';
   password = '';
+  isLoading = false;
 
   private authService = inject(AuthService);
   private router = inject(Router);
@@ -37,10 +38,12 @@ export class LoginComponent {
       this.showError('Please enter both username and password.');
       return;
     }
-
-    this.authService.loginStep1(this.username).pipe(
+    this.isLoading = true;
+    const fullUsername = this.username + '@srmist.edu.in';
+    this.authService.loginStep1(fullUsername).pipe(
       switchMap((step1Response: LoginStep1Response) => {
         if (!step1Response || !step1Response.lookup) {
+          this.isLoading = false;
           throw new Error('Invalid username or registration number.');
         }
         const { identifier, digest } = step1Response.lookup;
@@ -62,6 +65,7 @@ export class LoginComponent {
       },
       error: (err) => {
         console.error('Login failed:', err);
+        this.isLoading = false;
         // Check for specific error messages from the backend
         const detail = err.error?.message || err.message || 'Invalid credentials or server error.';
         this.showError(detail);

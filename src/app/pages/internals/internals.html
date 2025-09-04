@@ -1,0 +1,55 @@
+<div class="flex flex-col gap-6">
+  <h1 class="text-3xl font-semibold text-surface-900 dark:text-surface-0">
+    Internal Marks
+  </h1>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    @for (detail of marksDetails; track detail.course) {
+      <div class="bg-surface-800 rounded-lg p-6 flex flex-col gap-4 text-surface-200">
+        <!-- Card Header -->
+        <div class="flex justify-between items-start">
+          <h2 class="text-lg font-semibold flex-1">{{ getCourseTitle(detail.course) }} 
+            <span class="text-sm font-normal text-surface-400 ml-2">{{detail.category}}</span>
+          </h2>
+        </div>
+
+        <!-- Marks Details -->
+        <div class="bg-surface-900 rounded-md p-4 flex-grow flex flex-col justify-center min-h-[80px]">
+          @if (detail.marks && detail.marks.length > 0) {
+            <div class="flex flex-col gap-2">
+               @for (mark of detail.marks; track mark.exam) {
+                <div class="flex justify-between items-center text-sm">
+                  <span class="text-surface-400">{{ mark.exam }}</span>
+                  <div class="flex items-center gap-2 px-3 py-1 rounded-full" [ngClass]="getMarkPillClass(mark)">
+                    <span class="font-semibold">{{ mark.obtained | number: '1.2-2' }}</span>
+                    <span>/</span>
+                    <span class="font-medium">{{ mark.maxMark }}</span>
+                  </div>
+                </div>
+              }
+            </div>
+          } @else {
+            <div class="text-center text-red-500/70">
+              No tests conducted.
+            </div>
+          }
+        </div>
+        
+        <!-- Total -->
+        @let total = calculateTotal(detail.marks);
+        <div class="border-t border-dashed border-surface-700 pt-4 mt-auto">
+          <div class="flex justify-between items-center">
+            <span class="font-semibold">Total</span>
+            <div class="flex items-center gap-2 px-3 py-1 rounded-full font-bold" [ngClass]="getTotalPillClass(total)">
+              <span class="text-lg">{{ total.obtained | number: '1.2-2' }}</span>
+              <span>/</span>
+              <span>{{ total.max }}</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    }
+  </div>
+</div>
+

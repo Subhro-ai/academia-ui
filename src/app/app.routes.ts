@@ -15,6 +15,8 @@ export const routes: Routes = [
     children: [
       { path: 'dashboard', loadComponent: () => import('./pages/dashboard/dashboard').then(m => m.Dashboard) },
       { path: 'attendance', loadComponent: () => import('./pages/attendance/attendance').then(m => m.Attendance) },
+      { path: 'timetable', loadComponent: () => import('./pages/timetable/timetable').then(m => m.Timetable) },
+      { path: 'internals', loadComponent: () => import('./pages/internals/internals').then(m => m.Internals) },
 
     ]
   }

@@ -45,7 +45,7 @@ export class Main implements OnInit {
         { label: 'Dashboard', icon: 'pi pi-home', routerLink: '/dashboard', styleClass: 'dock-item' },
         { label: 'Attendance', icon: 'pi pi-bolt', routerLink: '/attendance', styleClass: 'dock-item' },
         { label: 'Timetable', icon: 'pi pi-calendar', routerLink: '/timetable', styleClass: 'dock-item' },
-        { label: 'Internals', icon: 'pi pi-chart-line', routerLink: '/marks', styleClass: 'dock-item' }
+        { label: 'Internals', icon: 'pi pi-chart-line', routerLink: '/internals', styleClass: 'dock-item' }
     ];
 
     this.desktopMenuItems = [{ label: 'Pages', items: pages }];
