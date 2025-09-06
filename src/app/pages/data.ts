@@ -34,6 +34,27 @@ export interface MarksDetail {
   marks: mark[];
 }
 
+export interface UserInfo {
+  regNumber: string;
+  name: string;
+  mobile: string;
+  section: string;
+  program: string;
+  department: string;
+  semester: string;
+  batch: string;
+}
+export interface DayEvent {
+  date: string;
+  day: string;
+  event: string;
+  dayOrder: string;
+}
+
+export interface Month {
+  month: string;
+  days: DayEvent[];
+}
 @Injectable({
   providedIn: 'root'
 })
@@ -99,5 +120,25 @@ export class DataService {
       }
     }
     return [totalObtained, max];
+  }
+
+  getUserInfo(): Observable<UserInfo> {
+    const sessionCookie = localStorage.getItem('sessionCookie');
+
+    if (!sessionCookie) {
+      throw new Error('Session token not found in localStorage.');
+    }
+
+    const headers = new HttpHeaders().set('X-Academia-Auth', sessionCookie);
+    return this.http.get<UserInfo>(`${this.apiUrl}/user-info`, { headers });
+  }
+
+  getCalendar(): Observable<Month[]> {
+    const sessionCookie = localStorage.getItem('sessionCookie');
+    if (!sessionCookie) {
+      throw new Error('Session token not found in localStorage.');
+    }
+    const headers = new HttpHeaders().set('X-Academia-Auth', sessionCookie);
+    return this.http.get<Month[]>(`${this.apiUrl}/calendar`, { headers });
   }
 }

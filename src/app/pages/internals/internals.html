@@ -5,7 +5,7 @@
 
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
     @for (detail of marksDetails; track detail.course) {
-      <div class="bg-surface-800 rounded-lg p-6 flex flex-col gap-4 text-surface-200">
+      <div class="bg-neutral-900 border border-gray-700 rounded-lg p-6 flex flex-col gap-4 text-surface-200 transition-colors hover:border-primary-500/50">
         <!-- Card Header -->
         <div class="flex justify-between items-start">
           <h2 class="text-lg font-semibold flex-1">{{ getCourseTitle(detail.course) }} 
@@ -29,8 +29,9 @@
               }
             </div>
           } @else {
-            <div class="text-center text-red-500/70">
-              No tests conducted.
+            <div class="flex flex-col items-center justify-center gap-2 text-center text-surface-500">
+              <i class="pi pi-inbox text-4xl text-surface-600"></i>
+              <span class="text-sm font-medium">No tests conducted yet.</span>
             </div>
           }
         </div>

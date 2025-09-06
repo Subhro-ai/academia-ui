@@ -19,6 +19,9 @@ export const routes: Routes = [
       { path: 'attendance', loadComponent: () => import('./pages/attendance/attendance').then(m => m.Attendance) },
       { path: 'timetable', loadComponent: () => import('./pages/timetable/timetable').then(m => m.Timetable) },
       { path: 'internals', loadComponent: () => import('./pages/internals/internals').then(m => m.Internals) },
+      { path: 'profile', loadComponent: () => import('./pages/profile/profile').then(m => m.Profile) },
+      { path: 'calendar', loadComponent: () => import('./pages/calendar/calendar').then(m => m.Calendar)},
+
 
     ]
   }

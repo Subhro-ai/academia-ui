@@ -3,10 +3,10 @@
     Attendance Details
   </h1>
 
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 ">
     @for (detail of attendanceDetails; track detail.courseCode) {
-      <p-card styleClass="flex flex-col">
-        <div class="flex justify-between items-center p-4 h-full">
+      <p-card styleClass="flex flex-col ">
+        <div class="flex justify-between items-center p-4 h-full ">
           <!-- Left side: Details -->
           <div class="flex flex-col h-full">
             <div>
@@ -15,7 +15,7 @@
             </div>
             <div class="mt-auto pt-4 flex flex-col gap-2 items-start">
                <span class="attendance-pill bg-green-500/5 inline-flex items-center text-xs font-semibold rounded-full px-3 py-1 text-white">Attended: {{ detail.courseConducted - detail.courseAbsent }}</span>
-               <span class="attendance-pill bg-red-500/5 inline-flex items-center text-xs font-semibold rounded-full px-3 py-1 text-white">Absent: {{ detail.courseAbsent }}</span>
+               <span class="attendance-pill bg-red-600/5 inline-flex items-center text-xs font-semibold rounded-full px-3 py-1 text-white">Absent: {{ detail.courseAbsent }}</span>
                <span class="attendance-pill bg-primary-900 inline-flex items-center text-xs font-semibold rounded-full px-3 py-1 text-white">Total: {{ detail.courseConducted }}</span>
             </div>
           </div>

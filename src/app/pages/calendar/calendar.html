@@ -1,0 +1,54 @@
+<div class="flex flex-col gap-6">
+  <h1 class="text-3xl font-semibold text-surface-900 dark:text-surface-0">
+    Academic Calendar
+  </h1>
+
+  @if (isLoading) {
+    <div class="card p-4">
+        @for (_ of [1,2,3,4,5]; track $index) {
+          <p-skeleton height="4rem" styleClass="mb-2"></p-skeleton>
+        }
+    </div>
+  } @else if (calendarData && calendarData.length > 0) {
+    <div class="flex flex-col gap-4">
+      @for(month of calendarData; track month.month) {
+        <p-fieldset [legend]="month.month" [toggleable]="true" [collapsed]="month.month !== currentMonthName">
+            <div class="flex flex-col">
+              @for (event of month.days; track event.date; let isLast = $last) {
+                 <div 
+                    class="flex items-center p-3 rounded-lg transition-colors duration-200 border-b"
+                    [ngClass]="{
+                      'border-surface-700': !isLast, 
+                      'border-transparent': isLast,
+                      'bg-green-500/20 text-green-300': isHoliday(event)
+                    }">
+                    
+                    <div class="flex flex-col items-center justify-center bg-surface-700/50 rounded-md p-2 w-16 h-16 mr-4">
+                        <span class="text-sm font-semibold text-surface-400">{{event.day | slice:0:3}}</span>
+                        <span class="text-2xl font-bold">{{event.date}}</span>
+                    </div>
+  
+                    <div class="flex-grow">
+                        <span class="font-semibold text-lg">{{event.event || 'Regular Classes'}}</span>
+                    </div>
+  
+                    <div class="text-right">
+                        <span class="font-semibold text-lg opacity-70">
+                          {{ event.dayOrder && event.dayOrder.trim() !== '' && event.dayOrder.trim() !== '-' ? 'DO ' + event.dayOrder : 'DO -' }}
+                        </span>
+                    </div>
+                </div>
+              }
+            </div>
+        </p-fieldset>
+      }
+    </div>
+  } @else {
+    <div class="text-center p-4 bg-surface-100 dark:bg-surface-800 rounded-lg">
+      <p class="text-surface-500 dark:text-surface-400">
+        The academic calendar for the current semester is not yet available.
+      </p>
+    </div>
+  }
+</div>
+

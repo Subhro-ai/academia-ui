@@ -1,1 +1,65 @@
-<p>profile works!</p>
+<div class="flex flex-col gap-6">
+  <h1 class="text-3xl font-semibold text-surface-900 dark:text-surface-0">
+    My Profile
+  </h1>
+
+  <p-card styleClass="w-full md:w-2/3 lg:w-1/2 mx-auto">
+    <ng-template pTemplate="content">
+      @if (isLoading) {
+        <div class="flex flex-col gap-4">
+          @for (_ of [1,2,3,4,5,6]; track $index) {
+            <div class="flex justify-between">
+              <p-skeleton width="6rem"></p-skeleton>
+              <p-skeleton width="10rem"></p-skeleton>
+            </div>
+          }
+        </div>
+      } @else if (userInfo) {
+        <div class="flex flex-col">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+            <div class="flex flex-col">
+              <span class="text-sm text-surface-500 dark:text-surface-400">Name</span>
+              <span class="font-medium">{{ userInfo.name }}</span>
+            </div>
+            <div class="flex flex-col">
+              <span class="text-sm text-surface-500 dark:text-surface-400">Registration No.</span>
+              <span class="font-medium">{{ userInfo.regNumber }}</span>
+            </div>
+            <div class="flex flex-col">
+              <span class="text-sm text-surface-500 dark:text-surface-400">Program</span>
+              <span class="font-medium">{{ userInfo.program }}</span>
+            </div>
+            <div class="flex flex-col">
+              <span class="text-sm text-surface-500 dark:text-surface-400">Department</span>
+              <span class="font-medium">{{ userInfo.department }}</span>
+            </div>
+             <div class="flex flex-col">
+              <span class="text-sm text-surface-500 dark:text-surface-400">Section</span>
+              <span class="font-medium">{{ userInfo.section }}</span>
+            </div>
+             <div class="flex flex-col">
+              <span class="text-sm text-surface-500 dark:text-surface-400">Semester</span>
+              <span class="font-medium">{{ userInfo.semester }}</span>
+            </div>
+            <div class="flex flex-col">
+              <span class="text-sm text-surface-500 dark:text-surface-400">Batch</span>
+              <span class="font-medium">{{ userInfo.batch }}</span>
+            </div>
+            <div class="flex flex-col">
+              <span class="text-sm text-surface-500 dark:text-surface-400">Mobile</span>
+              <span class="font-medium">{{ userInfo.mobile }}</span>
+            </div>
+          </div>
+        </div>
+      } @else {
+        <div class="text-center text-surface-500 dark:text-surface-400">
+          Could not load user information.
+        </div>
+      }
+    </ng-template>
+    <ng-template pTemplate="footer">
+        <p-button label="Logout" icon="pi pi-sign-out" styleClass="w-full" severity="danger" (click)="logout()"></p-button>
+    </ng-template>
+  </p-card>
+</div>
+
