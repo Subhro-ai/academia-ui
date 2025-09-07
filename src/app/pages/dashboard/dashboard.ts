@@ -26,6 +26,7 @@ export class Dashboard {
   totalMarks = 0;
   obtainedMarks = 0;
   totalmarkList: number[] = [];
+  displayedAttendance: number = 0;
 
   ngOnInit() {
     this.dataService.getTimetable().subscribe({
@@ -51,11 +52,13 @@ export class Dashboard {
       next: (data) => {
         this.attendaceList = data;
         console.log('Attendance data received:', this.attendaceList);
+        this.animateAttendance(this.totalAttendance);
       },
       error: (err) => {
         console.error('Failed to fetch attendance', err);
       }
     });
+
 
     this.dataService.getMarks().subscribe({
       next: (data) => {
@@ -78,6 +81,28 @@ export class Dashboard {
     const course = this.attendaceList.find(a => a.courseCode === courseCode);
     return course ? `${course.courseAttendance}` : 'N/A';
     console.log(this.totalmarkList);
+  }
+
+  animateAttendance(target: number) {
+    let start = 0;
+    const duration = 1000;
+    const startTime = performance.now();
+
+    const step = (currentTime: number) => {
+      const elapsedTime = currentTime - startTime;
+      const progress = Math.min(elapsedTime / duration, 1);
+      const current = start + progress * (target - start);
+      
+      this.displayedAttendance = parseFloat(current.toFixed(2));
+
+      if (progress < 1) {
+        requestAnimationFrame(step);
+      } else {
+        this.displayedAttendance = target;
+      }
+    };
+
+    requestAnimationFrame(step);
   }
 
   getAttendanceClass(courseCode: string): string {
