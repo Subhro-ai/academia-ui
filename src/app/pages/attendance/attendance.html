@@ -5,7 +5,7 @@
     </h1>
     <div>
       @if (isPredicting) {
-        <p-button label="Reset" icon="pi pi-refresh" (click)="resetPrediction()" styleClass="p-button-outlined" />
+        <p-button label="Reset" icon="pi pi-refresh" (click)="resetPrediction()" variant="outlined" severity="warn" />
       }
       <p-button 
         label="Predict" 

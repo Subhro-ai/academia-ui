@@ -2,7 +2,6 @@ import { Injectable, inject } from '@angular/core';
 import { Observable, forkJoin, map } from 'rxjs';
 import { DataService, Month, AttendanceDetail, DaySchedule, DayEvent } from '../pages/data';
 
-
 /**
  * Interface to hold the combined data required for prediction calculations.
  */
@@ -20,7 +19,6 @@ export interface PredictedAttendance extends AttendanceDetail {
   predictedAbsent: number;
   predictedAttendance: string;
 }
-
 
 @Injectable({
   providedIn: 'root'
@@ -45,23 +43,37 @@ export class PredictionService {
   }
 
   /**
-   * Predicts attendance percentages for all courses if a student takes leave for a specified period.
+   * Predicts attendance percentages, assuming perfect attendance until the leave starts,
+   * and then absence during the leave period.
    * @param startDate The start date of the leave.
    * @param endDate The end date of the leave.
    * @param data The combined prediction data.
-   * @returns An array of PredictedAttendance objects with the new calculated values.
+   * @returns An array of PredictedAttendance objects.
    */
   predictAttendanceOnLeave(startDate: Date, endDate: Date, data: PredictionData): PredictedAttendance[] {
-    const futureAbsences = this.calculateFutureAbsences(startDate, endDate, data.calendar, data.timetable);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // Calculate classes to be attended from today until the day before the leave starts.
+    const attendedStartDate = new Date(today);
+    const attendedEndDate = new Date(startDate);
+    attendedEndDate.setDate(attendedEndDate.getDate() - 1);
+    
+    const futureAttendances = (attendedEndDate >= attendedStartDate) 
+      ? this.calculateClassesInDateRange(attendedStartDate, attendedEndDate, data.calendar, data.timetable)
+      : new Map<string, number>();
+
+    // Calculate classes that will be missed during the leave period.
+    const futureAbsences = this.calculateClassesInDateRange(startDate, endDate, data.calendar, data.timetable);
     
     const predictedAttendanceList = data.attendance.map(subject => {
+      const additionalAttended = futureAttendances.get(subject.courseCode) || 0;
       const additionalAbsences = futureAbsences.get(subject.courseCode) || 0;
       
-      // For prediction, we assume the missed classes would have been conducted.
-      const predictedConducted = subject.courseConducted + additionalAbsences;
+      const predictedConducted = subject.courseConducted + additionalAttended + additionalAbsences;
       const predictedAbsent = subject.courseAbsent + additionalAbsences;
       
-      let predictedPercentage = 0;
+      let predictedPercentage = 100;
       if (predictedConducted > 0) {
         predictedPercentage = ((predictedConducted - predictedAbsent) / predictedConducted) * 100;
       }
@@ -78,36 +90,36 @@ export class PredictionService {
   }
 
   /**
-   * Helper function to count the number of classes for each course within a date range.
+   * Helper function to count the number of classes for each course within a given date range.
    */
-  private calculateFutureAbsences(startDate: Date, endDate: Date, calendar: Month[], timetable: DaySchedule[]): Map<string, number> {
-    const absences = new Map<string, number>();
+  private calculateClassesInDateRange(startDate: Date, endDate: Date, calendar: Month[], timetable: DaySchedule[]): Map<string, number> {
+    const classCounts = new Map<string, number>();
+    
     const monthMap: { [key: string]: number } = {
-      "Jan '25": 0, "Feb '25": 1, "Mar '25": 2, "Apr '25": 3, "May '25": 4, "Jun '25": 5,
-      "Jul '25": 6, "Aug '25": 7, "Sep '25": 8, "Oct '25": 9, "Nov '25": 10, "Dec '25": 11
+      "Jan": 0, "Feb": 1, "Mar": 2, "Apr": 3, "May": 4, "Jun": 5,
+      "Jul": 6, "Aug": 7, "Sep": 8, "Oct": 9, "Nov": 10, "Dec": 11,
     };
 
-    // Set times to 0 to ensure we're only comparing dates
-    startDate.setHours(0, 0, 0, 0);
-    endDate.setHours(0, 0, 0, 0);
+    const leaveStart = new Date(startDate);
+    const leaveEnd = new Date(endDate);
+    leaveStart.setHours(0, 0, 0, 0);
+    leaveEnd.setHours(23, 59, 59, 999);
 
     calendar.forEach(month => {
-      // Handles month formats like "Jul '25"
-      const parts = month.month.split(" '");
-      if (parts.length !== 2) {
-        console.error(`Invalid month format: ${month.month}`);
-        return; // Skip this month if format is unexpected
+      let monthIndex: number;
+      let year: number;
+      
+      if (month.month.includes("'")) {
+        const parts = month.month.split(" '");
+        monthIndex = monthMap[parts[0]];
+        year = 2000 + parseInt(parts[1], 10);
+      } else {
+        monthIndex = monthMap[month.month.trim()];
+        year = new Date().getFullYear();
       }
 
-      const monthAbbr = parts[0];
-      const yearShort = parts[1];
-      
-      const monthIndex = monthMap[monthAbbr];
-      const year = 2000 + parseInt(yearShort, 10);
-
       if (monthIndex === undefined || isNaN(year)) {
-        console.error(`Could not parse month/year from: ${month.month}`);
-        return; // Skip if month or year is invalid
+        return;
       }
 
       month.days.forEach(day => {
@@ -115,27 +127,35 @@ export class PredictionService {
           const dayNumber = parseInt(day.date, 10);
           if (isNaN(dayNumber)) return;
 
-          // Create date with the correctly parsed year and month
           const dayDate = new Date(year, monthIndex, dayNumber);
           dayDate.setHours(0, 0, 0, 0);
           
-          if (dayDate >= startDate && dayDate <= endDate && day.dayOrder && day.dayOrder.trim() !== '' && day.dayOrder.trim() !== '-') {
-            const daySchedule = timetable.find(d => d.dayOrder === `Day ${day.dayOrder}`);
+          if (dayDate >= leaveStart && dayDate <= leaveEnd) {
+            const dayOrder = day.dayOrder ? day.dayOrder.trim() : '';
+            const dayName = day.day ? day.day.trim().toLowerCase() : '';
+            const eventText = day.event ? day.event.trim().toLowerCase() : '';
+            
+            if (dayName === 'saturday' || dayName === 'sunday' || dayOrder === '' || dayOrder === '-' || eventText.includes('holiday')) {
+              return;
+            }
+            
+            const daySchedule = timetable.find(d => d.dayOrder === `Day ${dayOrder}`);
+            
             if (daySchedule) {
               daySchedule.classes.forEach(course => {
                 if (course.isClass && course.courseCode) {
-                  absences.set(course.courseCode, (absences.get(course.courseCode) || 0) + 1);
+                  classCounts.set(course.courseCode, (classCounts.get(course.courseCode) || 0) + 1);
                 }
               });
             }
           }
         } catch (e) {
-          console.error(`Could not parse date: ${day.date} from month ${month.month}`, e);
+          console.error(`Error processing date: ${day.date} from month ${month.month}`, e);
         }
       });
     });
 
-    return absences;
+    return classCounts;
   }
 }
 

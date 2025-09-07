@@ -56,6 +56,8 @@ export class Attendance implements OnInit {
   isMobile = false;
   private predictionData: PredictionData | null = null;
   rangeDates: Date[] | undefined = undefined;
+  
+  
 
   @HostListener('window:resize', ['$event'])
   onResize(event?: Event) {
