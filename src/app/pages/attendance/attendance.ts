@@ -5,19 +5,29 @@ import { DataService, AttendanceDetail } from '../data';
 import { trigger, transition, style, animate, query, stagger } from '@angular/animations';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
-import { DatePickerModule } from 'primeng/datepicker';
 import { FormsModule } from '@angular/forms';
 import { PredictionService, PredictionData, PredictedAttendance } from '../../utils/prediction';
 import { FloatLabelModule } from 'primeng/floatlabel';
+import { DatePickerModule } from 'primeng/datepicker';
 
 interface MarginInfo {
   value: number;
   label: string;
 }
+
 @Component({
   selector: 'app-attendance',
   standalone: true,
-  imports: [CommonModule, CardModule, NgClass, ButtonModule, DialogModule, DatePickerModule, FormsModule, FloatLabelModule],
+  imports: [
+    CommonModule, 
+    CardModule, 
+    NgClass, 
+    ButtonModule, 
+    DialogModule, 
+    DatePickerModule, 
+    FormsModule, 
+    FloatLabelModule
+  ],
   templateUrl: './attendance.html',
   styleUrls: ['./attendance.css'],
   animations: [
@@ -33,8 +43,7 @@ interface MarginInfo {
     ])
   ]
 })
-
-export class Attendance implements OnInit{
+export class Attendance implements OnInit {
   private dataService = inject(DataService);
   private predictionService = inject(PredictionService);
 
@@ -46,7 +55,7 @@ export class Attendance implements OnInit{
   isLoadingPredictionData = false;
   isMobile = false;
   private predictionData: PredictionData | null = null;
-  rangeDates: (Date | null)[] = [null, null];
+  rangeDates: Date[] | undefined = undefined;
 
   @HostListener('window:resize', ['$event'])
   onResize(event?: Event) {
@@ -77,6 +86,7 @@ export class Attendance implements OnInit{
         this.predictionData = data;
         this.isLoadingPredictionData = false;
         this.showPredictionDialog = true;
+        this.rangeDates = undefined; // Reset dates when opening dialog
       },
       error: (err) => {
         console.error('Failed to fetch prediction data', err);
@@ -86,7 +96,8 @@ export class Attendance implements OnInit{
   }
 
   runPrediction() {
-    if (this.rangeDates[0] && this.rangeDates[1] && this.predictionData) {
+    console.log(this.attendanceDetails);
+    if (this.rangeDates && this.rangeDates.length === 2 && this.rangeDates[0] && this.rangeDates[1] && this.predictionData) {
       this.attendanceDetails = this.predictionService.predictAttendanceOnLeave(
         this.rangeDates[0],
         this.rangeDates[1],
@@ -94,13 +105,18 @@ export class Attendance implements OnInit{
       );
       this.isPredicting = true;
       this.showPredictionDialog = false;
-      this.rangeDates = [null, null];
+      this.rangeDates = undefined;
     }
   }
 
   resetPrediction() {
     this.attendanceDetails = this.originalAttendanceDetails;
     this.isPredicting = false;
+  }
+
+  closePredictionDialog() {
+    this.showPredictionDialog = false;
+    this.rangeDates = undefined;
   }
 
   isPredicted(detail: AttendanceDetail | PredictedAttendance): detail is PredictedAttendance {
@@ -154,5 +170,9 @@ export class Attendance implements OnInit{
       return { value, label: 'Required' };
     }
   }
-}
 
+  // Helper to check if dates are selected
+  get areDatesSelected(): boolean {
+    return !!(this.rangeDates && this.rangeDates.length === 2 && this.rangeDates[0] && this.rangeDates[1]);
+  }
+}

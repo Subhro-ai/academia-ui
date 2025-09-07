@@ -67,11 +67,20 @@
   header="Predict Attendance" 
   [(visible)]="showPredictionDialog" 
   [modal]="true" 
-  [style]="{width: '90vw', maxWidth: '25rem'}"
+  [style]="{width: '95vw', maxWidth: '450px'}"
   [draggable]="false"
-  [resizable]="false">
-    <div class="flex flex-col gap-6 pt-4">
-      <p class="text-surface-600 dark:text-surface-300">Select the start and end date for your planned leave.</p>
+  [resizable]="false"
+  [closable]="true"
+  [breakpoints]="{'768px': '100vw'}"
+  styleClass="surface-overlay"
+  (onHide)="closePredictionDialog()">
+  
+  <div class="flex flex-col gap-4">
+    <p class="text-sm md:text-base text-surface-600 dark:text-surface-300 mb-2">
+      Select the start and end date for your planned leave.
+    </p>
+    
+    <div class="w-full">
       <p-floatLabel>
         <p-datePicker
           [(ngModel)]="rangeDates"
@@ -79,15 +88,48 @@
           inputId="leave_dates"
           dateFormat="dd/mm/yy"
           styleClass="w-full"
-          [touchUI]="isMobile"
-          [showIcon]="true">
+          [iconDisplay]="'input'"
+          [showIcon]="true"
+          [appendTo]="'body'"
+          [style]="{'width': '100%'}"
+          placeholder="Select date range">
         </p-datePicker>
         <label for="leave_dates">Leave Dates</label>
       </p-floatLabel>
     </div>
-    <div class="flex justify-end gap-2 mt-6">
-      <p-button label="Cancel" (click)="showPredictionDialog = false" styleClass="p-button-text"></p-button>
-      <p-button label="OK" (click)="runPrediction()" [disabled]="!rangeDates[0] || !rangeDates[1]"></p-button>
+    
+    @if (rangeDates && rangeDates.length === 2 && rangeDates[0] && rangeDates[1]) {
+      <div class="bg-surface-100 dark:bg-surface-800 rounded-lg p-3 mt-2">
+        <div class="text-xs md:text-sm text-surface-600 dark:text-surface-400">
+          <span class="font-semibold">Selected period:</span>
+        </div>
+        <div class="text-sm md:text-base font-medium text-surface-900 dark:text-surface-100 mt-1">
+          {{ rangeDates[0] | date:'dd MMM yyyy' }} - {{ rangeDates[1] | date:'dd MMM yyyy' }}
+        </div>
+        @let dayCount = ((rangeDates[1].getTime() - rangeDates[0].getTime()) / (1000 * 3600 * 24)) + 1;
+        <div class="text-xs text-surface-500 dark:text-surface-400 mt-1">
+          {{ dayCount }} day{{ dayCount > 1 ? 's' : '' }} of leave
+        </div>
+      </div>
+    }
+  </div>
+  
+  <ng-template pTemplate="footer">
+    <div class="flex flex-col sm:flex-row justify-end gap-2 w-full">
+      <p-button 
+        label="Cancel" 
+        (click)="closePredictionDialog()" 
+        styleClass="p-button-text w-full sm:w-auto"
+        [style]="{'min-width': '100px'}">
+      </p-button>
+      <p-button 
+        label="Predict" 
+        icon="pi pi-chart-line"
+        (click)="runPrediction()" 
+        [disabled]="!areDatesSelected"
+        styleClass="w-full sm:w-auto"
+        [style]="{'min-width': '100px'}">
+      </p-button>
     </div>
+  </ng-template>
 </p-dialog>
-
