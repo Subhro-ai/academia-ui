@@ -9,6 +9,7 @@ import { RippleModule } from 'primeng/ripple';
 import { DividerModule } from 'primeng/divider';
 import { DockModule } from 'primeng/dock';
 import { AuthService } from '../../auth/auth';
+import { fadeAnimation } from '../../route-animations';
 
 interface NavItem {
   label: string;
@@ -22,7 +23,8 @@ interface NavItem {
   standalone: true,
   imports: [RouterOutlet, DrawerModule, DividerModule, DockModule, ButtonModule, CommonModule, RouterModule, MenuModule, RippleModule],
   templateUrl: './main.html',
-  styleUrl: './main.css'
+  styleUrl: './main.css',
+  animations: [fadeAnimation]
 })
 export class Main implements OnInit {
 
@@ -50,7 +52,8 @@ export class Main implements OnInit {
         { label: 'Dashboard', icon: 'pi pi-home', routerLink: '/dashboard' },
         { label: 'Attendance', icon: 'pi pi-bolt', routerLink: '/attendance' },
         { label: 'Timetable', icon: 'pi pi-calendar', routerLink: '/timetable' },
-        { label: 'Internals', icon: 'pi pi-chart-line', routerLink: '/internals' }
+        { label: 'Internals', icon: 'pi pi-chart-line', routerLink: '/internals' },
+        { label: 'Calendar', icon: 'pi pi-calendar-times', routerLink: '/calendar' },
     ];
 
     this.desktopMenuItems = [{ label: 'Pages', items: pages }];
@@ -61,7 +64,8 @@ export class Main implements OnInit {
       { label: 'Attendance', icon: 'pi pi-bolt', route: '/attendance' },
       { label: 'Timetable', icon: 'pi pi-calendar', route: '/timetable' },
       { label: 'Internals', icon: 'pi pi-chart-line', route: '/internals' },
-      { label: 'Profile', icon: 'pi pi-user', route: '/profile' }
+      { label: 'Calendar', icon: 'pi pi-calendar-times', route: '/calendar' },
+      { label: 'Profile', icon: 'pi pi-user', route: '/profile' },
     ];
   }
 

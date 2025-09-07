@@ -10,6 +10,7 @@ import { definePreset } from '@primeuix/themes';
 
 import Aura from '@primeuix/themes/aura';
 import { MessageService } from 'primeng/api';
+import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 
 // 1. Define a new preset based on Aura
 const CustomAura = definePreset(Aura, {
@@ -36,6 +37,7 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideAnimationsAsync(),
     provideHttpClient(),
+    provideCharts(withDefaultRegisterables()),
 
     
     // 3. Use your new custom preset

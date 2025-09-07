@@ -11,7 +11,7 @@ import { AttendanceDetail, DataService, DaySchedule, MarksDetail } from '../data
     CommonModule,
     Divider,
     ButtonModule,
-    TableModule],
+    TableModule,],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css'
 })

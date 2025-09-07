@@ -57,9 +57,9 @@
     </div>
   }
 
-  <div class="flex-1 flex flex-col overflow-y-auto">
-    <main class="p-6 pb-24 md:pb-6">
-      <router-outlet></router-outlet>
+  <div class="flex-1 flex flex-col overflow-y-auto relative">
+    <main class="p-6 pb-24 md:pb-6" [@routeAnimations]="outlet.isActivated ? outlet.activatedRoute : ''">
+      <router-outlet #outlet="outlet"></router-outlet>
     </main>
   </div>
 </div>

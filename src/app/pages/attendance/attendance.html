@@ -3,9 +3,9 @@
     Attendance Details
   </h1>
 
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 ">
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 " [@cardAnimation]="attendanceDetails.length">
     @for (detail of attendanceDetails; track detail.courseCode) {
-      <p-card styleClass="flex flex-col ">
+      <p-card styleClass="flex flex-col">
         <div class="flex justify-between items-center p-4 h-full ">
           <!-- Left side: Details -->
           <div class="flex flex-col h-full">
