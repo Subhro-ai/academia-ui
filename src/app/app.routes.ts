@@ -1,5 +1,7 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './auth/auth.guard';
+import { initialDataResolver } from './initial-data.resolver';
+import { loginGuard } from './auth/login.guard';
 
 export const routes: Routes = [
 
@@ -8,12 +10,14 @@ export const routes: Routes = [
 
   {
     path: 'login',
+    canActivate: [loginGuard], 
     loadComponent: () => import('./auth/login/login').then(m => m.LoginComponent)
   },
   {
     path: '',
     loadComponent: () => import('./layout/main/main').then(m => m.Main),
     canActivate: [authGuard],
+    resolve: { data: initialDataResolver },
     children: [
       { path: 'dashboard', loadComponent: () => import('./pages/dashboard/dashboard').then(m => m.Dashboard) },
       { path: 'attendance', loadComponent: () => import('./pages/attendance/attendance').then(m => m.Attendance) },
