@@ -1,9 +1,11 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CardModule } from 'primeng/card';
-import { DataService, DayEvent, Month } from '../data';
+import { DayEvent, Month } from '../data';
+import { DataStoreService } from '../../data-store';
 import { SkeletonModule } from 'primeng/skeleton';
 import { FieldsetModule } from 'primeng/fieldset';
+import { take } from 'rxjs';
 
 @Component({
   selector: 'app-calendar',
@@ -13,7 +15,7 @@ import { FieldsetModule } from 'primeng/fieldset';
   styleUrls: ['./calendar.css']
 })
 export class Calendar implements OnInit {
-  private dataService = inject(DataService);
+  private dataStore = inject(DataStoreService);
   calendarData: Month[] = [];
   isLoading = true;
   count : number = 0;
@@ -26,14 +28,13 @@ export class Calendar implements OnInit {
   }
 
   ngOnInit() {
-    this.dataService.getCalendar().subscribe({
+    this.dataStore.calendar$.pipe(take(1)).subscribe({
       next: (data) => {
         this.calendarData = data;
         this.isLoading = false;
-        console.log(this.calendarData);
       },
       error: (err) => {
-        console.error('Failed to fetch calendar data', err);
+        console.error('Failed to fetch calendar data from store', err);
         this.isLoading = false;
       }
     });

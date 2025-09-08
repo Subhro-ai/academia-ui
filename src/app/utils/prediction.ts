@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
-import { Observable, forkJoin, map } from 'rxjs';
-import { DataService, Month, AttendanceDetail, DaySchedule, DayEvent } from '../pages/data';
+import { Observable, forkJoin, map, take } from 'rxjs';
+import {  Month, AttendanceDetail, DaySchedule, DayEvent } from '../pages/data';
+import { DataStoreService } from '../data-store';
 
 /**
  * Interface to hold the combined data required for prediction calculations.
@@ -24,17 +25,18 @@ export interface PredictedAttendance extends AttendanceDetail {
   providedIn: 'root'
 })
 export class PredictionService {
-  private dataService = inject(DataService);
+  private dataStore = inject(DataStoreService);
 
   /**
    * Fetches all the necessary data for prediction in parallel.
    * @returns An observable that emits a single PredictionData object when all data is fetched.
    */
   getPredictionData(): Observable<PredictionData> {
+    // Use forkJoin on the observables from the data store
     return forkJoin({
-      calendar: this.dataService.getCalendar(),
-      attendance: this.dataService.getAttendance(),
-      timetable: this.dataService.getTimetable()
+      calendar: this.dataStore.calendar$.pipe(take(1)),
+      attendance: this.dataStore.attendance$.pipe(take(1)),
+      timetable: this.dataStore.timetable$.pipe(take(1))
     }).pipe(
       map(data => {
         return data as PredictionData;

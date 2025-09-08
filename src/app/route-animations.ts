@@ -15,9 +15,8 @@ export const fadeAnimation = trigger('routeAnimations', [
         style({
           position: 'absolute',
           left: 0,
-          width: '100%',
           opacity: 0,
-          transform: 'scale(0.98) translateY(10px)',
+          transform: 'translateY(10px)',
         }),
       ],
       { optional: true }
@@ -28,7 +27,7 @@ export const fadeAnimation = trigger('routeAnimations', [
       [
         animate(
           '300ms ease-in-out',
-          style({ opacity: 1, transform: 'scale(1) translateY(0)' })
+          style({ opacity: 1, transform: ' translateY(0)' })
         ),
       ],
       { optional: true }

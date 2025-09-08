@@ -7,16 +7,20 @@ import { TableModule } from 'primeng/table';
 import { AttendanceDetail, DaySchedule, MarksDetail } from '../data';
 import { DataStoreService } from '../../data-store';
 import { forkJoin, take } from 'rxjs';
+import { ChipModule } from 'primeng/chip';
+
+
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CardModule, 
+  imports: [CardModule,
+    ChipModule,
     CommonModule,
     NgClass,
     Divider,
     ButtonModule,
-    TableModule,],
+    TableModule],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css'
 })
@@ -56,6 +60,7 @@ export class Dashboard implements OnInit {
       this.obtainedMarks = marksTotals.obtained;
       this.totalMarks = marksTotals.max;
       this.overallMarks = this.totalMarks > 0 ? (this.obtainedMarks / this.totalMarks) * 100 : 0;
+      console.log(this.getLowestAttendanceCourses());
     });
   }
 
@@ -89,6 +94,13 @@ export class Dashboard implements OnInit {
     return course ? `${course.courseAttendance}` : 'N/A';
   }
 
+  getLowestAttendanceCourses(): AttendanceDetail[] {
+    return this.attendanceDetails
+      .filter(a => a.courseConducted > 0)
+      .sort((a, b) => parseFloat(a.courseAttendance) - parseFloat(b.courseAttendance))
+      .slice(0, 3);
+  }
+
   animateAttendance(target: number) {
     let start = 0;
     const duration = 1000;
@@ -109,6 +121,30 @@ export class Dashboard implements OnInit {
     };
 
     requestAnimationFrame(step);
+  }
+
+  getAttendanceChange(courseCode: string): { increase: number; decrease: number } | null {
+    const detail = this.attendanceDetails.find(a => a.courseCode === courseCode);
+    if (!detail || detail.courseConducted === 0) {
+      return null;
+    }
+
+    const currentAttended = detail.courseConducted - detail.courseAbsent;
+    const currentPercentage = (currentAttended / detail.courseConducted) * 100;
+
+
+    const attendedNewPercentage = ((currentAttended + 1) / (detail.courseConducted + 1)) * 100;
+    
+
+    const missedNewPercentage = (currentAttended / (detail.courseConducted + 1)) * 100;
+    
+    const increase = attendedNewPercentage - currentPercentage;
+    const decrease = currentPercentage - missedNewPercentage;
+
+    return {
+      increase: parseFloat(increase.toFixed(2)),
+      decrease: parseFloat(decrease.toFixed(2))
+    };
   }
 
   getAttendanceClass(courseCode: string): string {

@@ -1,7 +1,7 @@
 import { Component, OnInit, inject, HostListener } from '@angular/core';
 import { CommonModule, NgClass } from '@angular/common';
 import { CardModule } from 'primeng/card';
-import { DataService, AttendanceDetail } from '../data';
+import { AttendanceDetail } from '../data';
 import { trigger, transition, style, animate, query, stagger } from '@angular/animations';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
@@ -10,6 +10,7 @@ import { PredictionService, PredictionData, PredictedAttendance } from '../../ut
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { DatePickerModule } from 'primeng/datepicker';
 import { DataStoreService } from '../../data-store';
+import { take } from 'rxjs';
 
 interface MarginInfo {
   value: number;
@@ -45,7 +46,7 @@ interface MarginInfo {
   ]
 })
 export class Attendance implements OnInit {
-  private dataService = inject(DataService);
+  private dataStore = inject(DataStoreService);
   private predictionService = inject(PredictionService);
 
   attendanceDetails: (AttendanceDetail | PredictedAttendance)[] = [];
@@ -67,13 +68,13 @@ export class Attendance implements OnInit {
 
   ngOnInit() {
     this.checkScreenSize();
-    this.dataService.getAttendance().subscribe({
+    this.dataStore.attendance$.pipe(take(1)).subscribe({
       next: (data) => {
         this.attendanceDetails = data;
         this.originalAttendanceDetails = [...data];
       },
       error: (err) => {
-        console.error('Failed to fetch attendance details', err);
+        console.error('Failed to fetch attendance details from store', err);
       }
     });
   }

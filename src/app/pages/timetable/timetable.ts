@@ -4,6 +4,8 @@ import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { TableModule } from 'primeng/table';
 import { DataService, DaySchedule } from '../data';
+import { DataStoreService } from '../../data-store';
+import { take } from 'rxjs';
 
 @Component({
   selector: 'app-timetable',
@@ -12,18 +14,17 @@ import { DataService, DaySchedule } from '../data';
   styleUrl: './timetable.css'
 })
 export class Timetable implements OnInit{
-  private dataService = inject(DataService);
+  private dataService = inject(DataStoreService);
 
   timetable: DaySchedule[] = [];
   currentDayIndex = 0;
   isLoading = true;
 
   ngOnInit() {
-    this.dataService.getTimetable().subscribe({
+    this.dataService.timetable$.pipe(take(1)).subscribe({
       next: (data) => {
         this.timetable = data;
         this.isLoading = false;
-        console.log('Timetable data received:', this.timetable);
       },
       error: (err) => {
         console.error('Failed to fetch timetable', err);

@@ -3,9 +3,10 @@ import { CommonModule } from '@angular/common';
 import { CardModule } from 'primeng/card';
 import { ChipModule } from 'primeng/chip';
 import { DividerModule } from 'primeng/divider';
-import { DataService, MarksDetail, mark } from '../data';
-import { forkJoin } from 'rxjs';
+import { MarksDetail, mark } from '../data';
+import { forkJoin, take } from 'rxjs';
 import { trigger, transition, style, animate, query, stagger } from '@angular/animations';
+import { DataStoreService } from '../../data-store';
 
 @Component({
   selector: 'app-internals',
@@ -26,24 +27,28 @@ import { trigger, transition, style, animate, query, stagger } from '@angular/an
   ]
 })
 export class Internals {
-private dataService = inject(DataService);
+private dataStore = inject(DataStoreService);
   marksDetails: MarksDetail[] = [];
   private courseTitleMap = new Map<string, string>();
 
+
   ngOnInit() {
+
     forkJoin({
-      marks: this.dataService.getMarks(),
-      attendance: this.dataService.getAttendance()
+      marks: this.dataStore.marks$.pipe(take(1)),
+      attendance: this.dataStore.attendance$.pipe(take(1))
     }).subscribe({
       next: ({ marks, attendance }) => {
+
         attendance.forEach(att => {
           this.courseTitleMap.set(att.courseCode, att.courseTitle);
         });
 
+
         this.marksDetails = marks.filter(detail => detail.course && !detail.course.toLowerCase().includes('course code'));
       },
       error: (err) => {
-        console.error('Failed to fetch marks or attendance data', err);
+        console.error('Failed to fetch marks or attendance data from store', err);
       }
     });
   }
