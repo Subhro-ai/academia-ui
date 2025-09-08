@@ -1,86 +1,92 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CardModule } from 'primeng/card';
 import { CommonModule, NgClass } from '@angular/common';
 import { Divider } from 'primeng/divider';
 import { ButtonModule } from 'primeng/button';
-import { TableModule } from 'primeng/table'; // Import TableModule
-import { AttendanceDetail, DataService, DaySchedule, MarksDetail } from '../data';
+import { TableModule } from 'primeng/table';
+import { AttendanceDetail, DaySchedule, MarksDetail } from '../data';
+import { DataStoreService } from '../../data-store';
+import { forkJoin, take } from 'rxjs';
+
 @Component({
   selector: 'app-dashboard',
+  standalone: true,
   imports: [CardModule, 
     CommonModule,
+    NgClass,
     Divider,
     ButtonModule,
     TableModule,],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css'
 })
-export class Dashboard {
-  private dataService = inject(DataService);
+export class Dashboard implements OnInit {
+  private dataStore = inject(DataStoreService);
 
   timetable: DaySchedule[] = [];
   currentDayIndex = 0;
   totalAttendance = 0;
-  attendaceList: AttendanceDetail[] = [];
-  marksList: MarksDetail[] = [];
-  totalMarks = 0;
+  attendanceDetails: AttendanceDetail[] = [];
+  marksDetails: MarksDetail[] = [];
+  courseTitleMap = new Map<string, string>();
+  overallMarks = 0;
+  displayedAttendance = 0;
   obtainedMarks = 0;
-  totalmarkList: number[] = [];
-  displayedAttendance: number = 0;
-
+  totalMarks = 0;
+  
   ngOnInit() {
-    this.dataService.getTimetable().subscribe({
-      next: (data) => {
-        this.timetable = data;
-        console.log('Timetable data received:', this.timetable);
-      },
-      error: (err) => {
-        console.error('Failed to fetch timetable', err);
-        // Handle error, maybe show a toast message
-      }
-    });
-    this.dataService.getTotalAttendance().subscribe({
-      next: (data) => {
-        this.totalAttendance = data.totalAttendancePercentage;
-      },
-      error: (err) => {
-        console.error('Failed to fetch total attendance', err);
-      }
-    });
+    // Get all data from the store at once
+    forkJoin({
+      timetable: this.dataStore.timetable$.pipe(take(1)),
+      attendance: this.dataStore.attendance$.pipe(take(1)),
+      marks: this.dataStore.marks$.pipe(take(1))
+    }).subscribe(({ timetable, attendance, marks }) => {
+      this.timetable = timetable;
+      this.attendanceDetails = attendance;
 
-    this.dataService.getAttendance().subscribe({
-      next: (data) => {
-        this.attendaceList = data;
-        console.log('Attendance data received:', this.attendaceList);
-        this.animateAttendance(this.totalAttendance);
-      },
-      error: (err) => {
-        console.error('Failed to fetch attendance', err);
-      }
-    });
+      this.totalAttendance = this.calculateTotalAttendance(attendance);
+      this.animateAttendance(this.totalAttendance);
 
+      attendance.forEach((att: AttendanceDetail) => {
+        this.courseTitleMap.set(att.courseCode, att.courseTitle);
+      });
 
-    this.dataService.getMarks().subscribe({
-      next: (data) => {
-        console.log('Marks data received:', data);
-        this.marksList = data;
-        this.totalmarkList = this.dataService.getTotalMarks(this.marksList);
-        // console.log(this.totalmarkList);
-        this.obtainedMarks = this.totalmarkList[0];
-        this.totalMarks = this.totalmarkList[1];
-      },
-      error: (err) => {
-        console.error('Failed to fetch marks', err);
-      }
+      this.marksDetails = marks.filter((detail: MarksDetail) => detail.course && !detail.course.toLowerCase().includes('course code'));
+      const marksTotals = this.calculateOverallMarks(this.marksDetails);
+      this.obtainedMarks = marksTotals.obtained;
+      this.totalMarks = marksTotals.max;
+      this.overallMarks = this.totalMarks > 0 ? (this.obtainedMarks / this.totalMarks) * 100 : 0;
     });
   }
 
+  private calculateTotalAttendance(attendance: AttendanceDetail[]): number {
+    let totalConducted = 0;
+    let totalAbsent = 0;
+    for (const detail of attendance) {
+      totalConducted += detail.courseConducted;
+      totalAbsent += detail.courseAbsent;
+    }
+    return totalConducted > 0 ? ((totalConducted - totalAbsent) / totalConducted) * 100 : 0;
+  }
 
+  private calculateOverallMarks(marks: MarksDetail[]): { obtained: number; max: number } {
+    const total = marks.reduce((acc, detail) => {
+        const subjectTotal = detail.marks.reduce((sAcc, sMark) => {
+            sAcc.obtained += sMark.obtained || 0;
+            sAcc.max += sMark.maxMark || 0;
+            return sAcc;
+        }, { obtained: 0, max: 0 });
+        acc.obtained += subjectTotal.obtained;
+        acc.max += subjectTotal.max;
+        return acc;
+    }, { obtained: 0, max: 0 });
+
+    return { obtained: parseFloat(total.obtained.toFixed(2)), max: total.max };
+  }
 
   getAttendanceForCourse(courseCode: string): string {
-    const course = this.attendaceList.find(a => a.courseCode === courseCode);
+    const course = this.attendanceDetails.find(a => a.courseCode === courseCode);
     return course ? `${course.courseAttendance}` : 'N/A';
-    console.log(this.totalmarkList);
   }
 
   animateAttendance(target: number) {
@@ -106,7 +112,7 @@ export class Dashboard {
   }
 
   getAttendanceClass(courseCode: string): string {
-    const course = this.attendaceList.find(a => a.courseCode === courseCode);
+    const course = this.attendanceDetails.find(a => a.courseCode === courseCode);
     if (course && course.courseAttendance) {
       const attendancePercentage = parseFloat(course.courseAttendance);
       if (!isNaN(attendancePercentage)) {
@@ -127,6 +133,5 @@ export class Dashboard {
       this.currentDayIndex--;
     }
   }
-
-  
 }
+

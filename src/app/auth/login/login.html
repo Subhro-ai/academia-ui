@@ -18,7 +18,7 @@
 
         <!-- The (click)="login()" was re-added here -->
         <p-button 
-          [label]="isLoading ? 'Authenticating...' : 'Login'" 
+          [label]="isLoading ? statusMessage : 'Login'" 
           icon="pi pi-sign-in" 
           styleClass="w-full" 
           (click)="login()"

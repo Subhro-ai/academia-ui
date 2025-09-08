@@ -55,6 +55,16 @@ export interface Month {
   month: string;
   days: DayEvent[];
 }
+
+export interface AllData {
+  attendance: AttendanceDetail[];
+  marks: MarksDetail[];
+  timetable: DaySchedule[];
+  calendar: Month[];
+  userInfo: UserInfo;
+}
+
+
 @Injectable({
   providedIn: 'root'
 })
@@ -140,5 +150,14 @@ export class DataService {
     }
     const headers = new HttpHeaders().set('X-Academia-Auth', sessionCookie);
     return this.http.get<Month[]>(`${this.apiUrl}/calendar`, { headers });
+  }
+
+  getAllData(): Observable<AllData> {
+    const sessionCookie = localStorage.getItem('sessionCookie');
+    if (!sessionCookie) {
+      throw new Error('Session token not found in localStorage.');
+    }
+    const headers = new HttpHeaders().set('X-Academia-Auth', sessionCookie);
+    return this.http.get<AllData>(`${this.apiUrl}/all`, { headers });
   }
 }

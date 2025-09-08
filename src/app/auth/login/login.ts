@@ -4,11 +4,14 @@ import { FormsModule } from '@angular/forms';
 import { CardModule } from 'primeng/card';
 import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
-import { FloatLabelModule } from 'primeng/floatlabel';
 import { ToastModule } from 'primeng/toast';
 import { AuthService, LoginStep1Response } from '../auth';
 import { switchMap } from 'rxjs/operators';
 import { MessageService } from 'primeng/api';
+import { InputGroupModule } from 'primeng/inputgroup';
+import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
+import { FloatLabelModule } from 'primeng/floatlabel';
+import { DataStoreService } from '../../data-store';
 
 @Component({
   selector: 'app-login',
@@ -18,8 +21,10 @@ import { MessageService } from 'primeng/api';
     CardModule,
     InputTextModule,
     ButtonModule,
-    FloatLabelModule,
-    ToastModule
+    ToastModule,
+    InputGroupModule,
+    InputGroupAddonModule,
+    FloatLabelModule
   ],
   providers: [],
   templateUrl: './login.html'
@@ -28,22 +33,26 @@ export class LoginComponent {
   username = '';
   password = '';
   isLoading = false;
+  statusMessage = 'Authenticating...';
 
   private authService = inject(AuthService);
+  private dataStoreService = inject(DataStoreService);
   private router = inject(Router);
   private messageService = inject(MessageService);
 
   login() {
-      if (!this.username || !this.password) {
+    if (!this.username || !this.password) {
       this.showError('Please enter both username and password.');
       return;
     }
+
     this.isLoading = true;
+    this.statusMessage = 'Authenticating...';
     const fullUsername = this.username + '@srmist.edu.in';
+
     this.authService.loginStep1(fullUsername).pipe(
       switchMap((step1Response: LoginStep1Response) => {
         if (!step1Response || !step1Response.lookup) {
-          this.isLoading = false;
           throw new Error('Invalid username or registration number.');
         }
         const { identifier, digest } = step1Response.lookup;
@@ -51,24 +60,28 @@ export class LoginComponent {
       })
     ).subscribe({
       next: (sessionCookie) => {
-        console.log('Login successful! Storing cookie...');
-        
-        // --- THIS IS THE FIX: Store the cookie in localStorage ---
         localStorage.setItem('sessionCookie', sessionCookie);
+        this.statusMessage = 'Fetching your data...';
         
-        this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Login successful!' });
-        
-        // Navigate to the dashboard after a short delay to show the success message
-        setTimeout(() => {
-            this.router.navigate(['/dashboard']);
-        }, 1500);
+        // Fetch all data and store it centrally
+        this.dataStoreService.fetchAllData().subscribe({
+            next: () => {
+                this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Login successful!' });
+                this.router.navigate(['/dashboard']);
+                this.isLoading = false;
+            },
+            error: (err) => {
+                console.error('Failed to fetch initial data:', err);
+                this.showError('Logged in, but could not fetch academic data.');
+                this.isLoading = false;
+            }
+        });
       },
       error: (err) => {
         console.error('Login failed:', err);
-        this.isLoading = false;
-        // Check for specific error messages from the backend
         const detail = err.error?.message || err.message || 'Invalid credentials or server error.';
         this.showError(detail);
+        this.isLoading = false;
       }
     });
   }
@@ -77,3 +90,4 @@ export class LoginComponent {
     this.messageService.add({ severity: 'error', summary: 'Login Failed', detail: message });
   }
 }
+

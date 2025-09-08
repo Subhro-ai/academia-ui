@@ -9,6 +9,7 @@ import { FormsModule } from '@angular/forms';
 import { PredictionService, PredictionData, PredictedAttendance } from '../../utils/prediction';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { DatePickerModule } from 'primeng/datepicker';
+import { DataStoreService } from '../../data-store';
 
 interface MarginInfo {
   value: number;
