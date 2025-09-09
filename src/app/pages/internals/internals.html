@@ -20,11 +20,20 @@
                @for (mark of detail.marks; track mark.exam) {
                 <div class="flex justify-between items-center text-sm">
                   <span class="text-surface-400">{{ mark.exam }}</span>
-                  <div class="flex items-center gap-2 px-3 py-1 rounded-full" [ngClass]="getMarkPillClass(mark)">
-                    <span class="font-semibold">{{ mark.obtained | number: '1.2-2' }}</span>
-                    <span>/</span>
-                    <span class="font-medium">{{ mark.maxMark }}</span>
-                  </div>
+                  @if (!mark.isPresent) {
+                    
+                    <div class="flex items-center gap-2 px-3 py-1 rounded-full" [ngClass]="getMarkPillClass(mark)">
+                      <span class="font-semibold">{{ mark.obtained | number: '1.2-2' }}</span>
+                      <span>/</span>
+                      <span class="font-medium">{{ mark.maxMark }}</span>
+                    </div>
+                  } @else {
+                     <div class="flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/20 text-red-400 font-semibold">
+
+                      Absent
+
+                     </div>
+                  }
                 </div>
               }
             </div>

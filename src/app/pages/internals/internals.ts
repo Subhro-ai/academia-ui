@@ -46,6 +46,7 @@ private dataStore = inject(DataStoreService);
 
 
         this.marksDetails = marks.filter(detail => detail.course && !detail.course.toLowerCase().includes('course code'));
+        console.log(this.marksDetails);
       },
       error: (err) => {
         console.error('Failed to fetch marks or attendance data from store', err);
@@ -58,7 +59,7 @@ private dataStore = inject(DataStoreService);
     return this.courseTitleMap.get(courseCode) || courseIdentifier;
   }
 
-  calculateTotal(marks: any[]): { obtained: number; max: number } {
+  calculateTotal(marks: mark[]): { obtained: number; max: number } {
     return marks.reduce(
       (acc, mark) => {
         acc.obtained += mark.obtained || 0;

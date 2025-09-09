@@ -77,6 +77,8 @@ export class Dashboard implements OnInit {
   private calculateOverallMarks(marks: MarksDetail[]): { obtained: number; max: number } {
     const total = marks.reduce((acc, detail) => {
         const subjectTotal = detail.marks.reduce((sAcc, sMark) => {
+            // An absence is correctly handled here because the backend sends 
+            // an 'obtained' value of 0, while the 'maxMark' is still included.
             sAcc.obtained += sMark.obtained || 0;
             sAcc.max += sMark.maxMark || 0;
             return sAcc;

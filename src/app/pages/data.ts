@@ -26,6 +26,7 @@ export interface mark {
   exam: string;
   obtained: number;
   maxMark: number;
+  isPresent: boolean;
 }
 
 export interface MarksDetail {
