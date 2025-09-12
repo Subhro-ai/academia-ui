@@ -9,7 +9,6 @@ import { RippleModule } from 'primeng/ripple';
 import { DividerModule } from 'primeng/divider';
 import { DockModule } from 'primeng/dock';
 import { AuthService } from '../../auth/auth';
-import { fadeAnimation } from '../../route-animations';
 
 interface NavItem {
   label: string;
@@ -24,7 +23,6 @@ interface NavItem {
   imports: [RouterOutlet, DrawerModule, DividerModule, DockModule, ButtonModule, CommonModule, RouterModule, MenuModule, RippleModule],
   templateUrl: './main.html',
   styleUrl: './main.css',
-  animations: [fadeAnimation]
 })
 export class Main implements OnInit {
 
