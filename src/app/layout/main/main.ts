@@ -1,9 +1,9 @@
-import { Component, HostListener, OnInit, inject } from '@angular/core';
+import { Component, HostListener, OnInit, ViewChild, inject } from '@angular/core';
 import { RouterOutlet, RouterModule, Router } from '@angular/router'; 
 import { DrawerModule } from 'primeng/drawer';
 import { ButtonModule } from 'primeng/button';
 import { CommonModule } from '@angular/common';
-import { MenuModule } from 'primeng/menu';
+import { Menu, MenuModule } from 'primeng/menu';
 import { MenuItem, MessageService } from 'primeng/api';
 import { RippleModule } from 'primeng/ripple';
 import { DividerModule } from 'primeng/divider';
@@ -29,11 +29,14 @@ export class Main implements OnInit {
   private router = inject(Router);
   private authService = inject(AuthService);
   private messageService = inject(MessageService);
+  @ViewChild('moreMenu') moreMenu!: Menu;
 
   isDesktop = true;
   sidebarVisible = true;
   desktopMenuItems: MenuItem[] = [];
   navItems: NavItem[] = [];
+  moreMenuItems: MenuItem[] = [];
+
 
   @HostListener('window:resize')
   onResize() {
@@ -52,6 +55,7 @@ export class Main implements OnInit {
         { label: 'Timetable', icon: 'pi pi-calendar', routerLink: '/timetable' },
         { label: 'Internals', icon: 'pi pi-chart-line', routerLink: '/internals' },
         { label: 'Calendar', icon: 'pi pi-calendar-times', routerLink: '/calendar' },
+        { label: 'Cycle Tests', icon: 'pi pi-file-edit', routerLink: '/cycle-tests' }
     ];
 
     this.desktopMenuItems = [{ label: 'Pages', items: pages }];
@@ -63,7 +67,11 @@ export class Main implements OnInit {
       { label: 'Timetable', icon: 'pi pi-calendar', route: '/timetable' },
       { label: 'Internals', icon: 'pi pi-chart-line', route: '/internals' },
       { label: 'Calendar', icon: 'pi pi-calendar-times', route: '/calendar' },
-      { label: 'Profile', icon: 'pi pi-user', route: '/profile' },
+      { label: 'More', icon: 'pi pi-ellipsis-h' }
+    ];
+    this.moreMenuItems = [
+      { label: 'Profile', icon: 'pi pi-user', routerLink: '/profile' },
+      { label: 'Cycle Tests', icon: 'pi pi-file-edit', routerLink: '/cycle-tests' }
     ];
   }
 

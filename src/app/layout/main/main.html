@@ -43,17 +43,25 @@
     <div class="fixed bottom-0 left-0 right-0 z-50 shadow-lg glass-footer">
       <nav class="flex items-center justify-around px-2 py-2">
         @for (item of navItems; track item.label) {
-          <a 
-            [routerLink]="item.route" 
-            routerLinkActive="nav-active"
-            [routerLinkActiveOptions]="{exact: false}"
-            class="nav-item flex flex-col items-center justify-center px-2 py-2 rounded-lg transition-all duration-200 hover:bg-surface-100 dark:hover:bg-surface-700 min-w-0 flex-1"
-            pRipple>
-            <span [class]="item.icon" class="text-lg mb-1 transition-colors duration-200"></span>
-            <span class="text-xs font-medium transition-colors duration-200 text-center leading-tight">{{ item.label }}</span>
-          </a>
+          @if(item.label === 'More') {
+            <button (click)="moreMenu.toggle($event)" class="nav-item flex flex-col items-center justify-center px-2 py-2 rounded-lg transition-all duration-200 hover:bg-surface-100 dark:hover:bg-surface-700 min-w-0 flex-1" pRipple>
+              <span [class]="item.icon" class="text-lg mb-1 transition-colors duration-200"></span>
+              <span class="text-xs font-medium transition-colors duration-200 text-center leading-tight">{{ item.label }}</span>
+            </button>
+          } @else {
+            <a 
+              [routerLink]="item.route" 
+              routerLinkActive="nav-active"
+              [routerLinkActiveOptions]="{exact: true}"
+              class="nav-item flex flex-col items-center justify-center px-2 py-2 rounded-lg transition-all duration-200 hover:bg-surface-100 dark:hover:bg-surface-700 min-w-0 flex-1"
+              pRipple>
+              <span [class]="item.icon" class="text-lg mb-1 transition-colors duration-200"></span>
+              <span class="text-xs font-medium transition-colors duration-200 text-center leading-tight">{{ item.label }}</span>
+            </a>
+          }
         }
       </nav>
+      <p-menu #moreMenu [model]="moreMenuItems" [popup]="true"></p-menu>
     </div>
   }
 
@@ -63,3 +71,4 @@
     </main>
   </div>
 </div>
+

@@ -25,7 +25,7 @@ export const routes: Routes = [
       { path: 'internals', loadComponent: () => import('./pages/internals/internals').then(m => m.Internals) },
       { path: 'profile', loadComponent: () => import('./pages/profile/profile').then(m => m.Profile) },
       { path: 'calendar', loadComponent: () => import('./pages/calendar/calendar').then(m => m.Calendar)},
-
+      { path: 'cycle-tests', loadComponent: () => import('./pages/dashboard/dashboard').then(m => m.Dashboard) },
 
     ]
   }
