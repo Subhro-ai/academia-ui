@@ -68,6 +68,42 @@
   border-top: 1px solid rgba(255, 255, 255, 0.2) !important;
 }
 
+/* More Menu Popup Styles - Fixed z-index and positioning */
+:host ::ng-deep .more-menu-popup {
+  z-index: 9999 !important;
+}
+
+:host ::ng-deep .more-menu-popup .p-menu {
+  z-index: 9999 !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  min-width: 180px;
+}
+
+:host ::ng-deep .more-menu-popup .p-menu .p-menu-list {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+:host ::ng-deep .more-menu-popup .logout-item {
+  color: var(--p-red-500) !important;
+}
+
+:host ::ng-deep .more-menu-popup .logout-item:hover {
+  background-color: var(--p-red-50) !important;
+  color: var(--p-red-600) !important;
+}
+
+/* Ensure the menu appears above the footer */
+:host ::ng-deep .p-menu.p-component {
+  z-index: 9999 !important;
+}
+
+/* Dark mode support for more menu */
+:host ::ng-deep .more-menu-popup .logout-item:hover {
+  background-color: rgba(239, 68, 68, 0.1) !important;
+}
+
 /* Responsive adjustments */
 @media (max-width: 480px) {
   .nav-item {
@@ -80,5 +116,11 @@
   
   .nav-item span[class*="pi-"] {
     font-size: 16px !important;
+  }
+  
+  /* Ensure more menu has proper positioning on small screens */
+  :host ::ng-deep .more-menu-popup .p-menu {
+    min-width: 160px;
+    max-width: 90vw;
   }
 }

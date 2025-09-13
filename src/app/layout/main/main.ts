@@ -1,3 +1,4 @@
+// main.ts - Fixed version
 import { Component, HostListener, OnInit, ViewChild, inject } from '@angular/core';
 import { RouterOutlet, RouterModule, Router } from '@angular/router'; 
 import { DrawerModule } from 'primeng/drawer';
@@ -37,7 +38,6 @@ export class Main implements OnInit {
   navItems: NavItem[] = [];
   moreMenuItems: MenuItem[] = [];
 
-
   @HostListener('window:resize')
   onResize() {
     this.checkScreenSize();
@@ -69,9 +69,28 @@ export class Main implements OnInit {
       { label: 'Calendar', icon: 'pi pi-calendar-times', route: '/calendar' },
       { label: 'More', icon: 'pi pi-ellipsis-h' }
     ];
+
+    // Fixed: Add command handlers and proper structure for more menu items
     this.moreMenuItems = [
-      { label: 'Profile', icon: 'pi pi-user', routerLink: '/profile' },
-      { label: 'Cycle Tests', icon: 'pi pi-file-edit', routerLink: '/cycle-tests' }
+      { 
+        label: 'Profile', 
+        icon: 'pi pi-user', 
+        command: () => this.router.navigate(['/profile'])
+      },
+      { 
+        label: 'Cycle Tests', 
+        icon: 'pi pi-file-edit', 
+        command: () => this.router.navigate(['/cycle-tests'])
+      },
+      {
+        separator: true
+      },
+      { 
+        label: 'Logout', 
+        icon: 'pi pi-sign-out', 
+        styleClass: 'logout-item',
+        command: () => this.logout()
+      }
     ];
   }
 
@@ -82,6 +101,16 @@ export class Main implements OnInit {
 
   toggleSidebar() {
     this.sidebarVisible = !this.sidebarVisible;
+  }
+
+  // Fixed: Add proper event handling for more menu
+  onMoreMenuClick(event: Event) {
+    console.log('More menu clicked', this.moreMenu); // Debug log
+    if (this.moreMenu) {
+      this.moreMenu.toggle(event);
+    } else {
+      console.error('moreMenu ViewChild is not available');
+    }
   }
 
   onNavItemClick(item: NavItem) {

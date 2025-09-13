@@ -44,7 +44,11 @@
       <nav class="flex items-center justify-around px-2 py-2">
         @for (item of navItems; track item.label) {
           @if(item.label === 'More') {
-            <button (click)="moreMenu.toggle($event)" class="nav-item flex flex-col items-center justify-center px-2 py-2 rounded-lg transition-all duration-200 hover:bg-surface-100 dark:hover:bg-surface-700 min-w-0 flex-1" pRipple>
+            <button 
+              (click)="onMoreMenuClick($event)" 
+              class="nav-item flex flex-col items-center justify-center px-2 py-2 rounded-lg transition-all duration-200 hover:bg-surface-100 dark:hover:bg-surface-700 min-w-0 flex-1" 
+              pRipple
+              type="button">
               <span [class]="item.icon" class="text-lg mb-1 transition-colors duration-200"></span>
               <span class="text-xs font-medium transition-colors duration-200 text-center leading-tight">{{ item.label }}</span>
             </button>
@@ -61,7 +65,16 @@
           }
         }
       </nav>
-      <p-menu #moreMenu [model]="moreMenuItems" [popup]="true"></p-menu>
+      
+      <!-- Fixed: Moved the menu outside the nav and added proper styling -->
+      <p-menu 
+        #moreMenu 
+        [model]="moreMenuItems" 
+        [popup]="true"
+        appendTo="body"
+        [style]="{'z-index': '9999'}"
+        styleClass="more-menu-popup">
+      </p-menu>
     </div>
   }
 
@@ -71,4 +84,3 @@
     </main>
   </div>
 </div>
-
