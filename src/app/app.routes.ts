@@ -6,8 +6,6 @@ import { loginGuard } from './auth/login.guard';
 export const routes: Routes = [
 
   { path: '', redirectTo: 'login', pathMatch: 'full' },
-
-
   {
     path: 'login',
     canActivate: [loginGuard], 
